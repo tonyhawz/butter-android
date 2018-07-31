@@ -26,10 +26,16 @@ public class Movie extends Streamable {
 
     @Nullable private final String trailer;
 
+    @Override
+    public String toString() {
+        return "Movie{} " + super.toString();
+    }
+
     public Movie(@NonNull final String id, @NonNull final String title, final int year, @NonNull final Genre[] genres, final float rating,
-            @Nullable final String poster, @NonNull final String backdrop, @NonNull final String synopsis,
-            @NonNull final Torrent[] torrents, @Nullable final String trailer) {
+                 @Nullable final String poster, @NonNull final String backdrop, @NonNull final String synopsis,
+                 @NonNull final Torrent[] torrents, @Nullable final String trailer) {
         super(id, title, year, genres, rating, poster, backdrop, synopsis, torrents);
+
         this.trailer = trailer;
     }
 

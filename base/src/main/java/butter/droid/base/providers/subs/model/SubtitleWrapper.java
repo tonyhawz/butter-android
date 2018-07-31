@@ -78,4 +78,11 @@ public class SubtitleWrapper implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "SubtitleWrapper{" +
+                "subtitle=" + subtitle +
+                ", fileUri=" + fileUri +
+                '}';
+    }
 }

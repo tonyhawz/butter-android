@@ -109,4 +109,12 @@ public class Subtitle implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "Subtitle{" +
+                "language='" + language + '\'' +
+                ", name='" + name + '\'' +
+                ", meta=" + meta +
+                '}';
+    }
 }

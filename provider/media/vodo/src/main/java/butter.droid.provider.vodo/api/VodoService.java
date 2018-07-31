@@ -17,15 +17,27 @@
 
 package butter.droid.provider.vodo.api;
 
+import java.util.List;
+
+import butter.droid.provider.vodo.VodoModule;
+import butter.droid.provider.vodo.api.model.VodoMovie;
 import butter.droid.provider.vodo.api.model.VodoResponse;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface VodoService {
 
-    @GET("popcorn")
-    Single<VodoResponse> fetchMovies(@Query("query") String query, @Query("genre") String genre, @Query("sort_by") String sortBy,
-            @Query("order_by") String orderBy, @Query("lang") String lang, @Query("limit") int limit, @Query("page") int page);
+    @GET("1")
+    Single<List<VodoMovie>> fetchMovies(
+            @Query("query") String query,
+            @Query("genre") String genre,
+            @Query("sort_by") String sortBy,
+            @Query("order_by") String orderBy,
+            @Query("lang") String lang,
+            @Query("limit") int limit,
+            @Query("page") int page);
 
 }

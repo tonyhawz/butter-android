@@ -156,4 +156,17 @@ public abstract class Media implements Parcelable {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "Media{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", year=" + year +
+                ", genres=" + Arrays.toString(genres) +
+                ", rating=" + rating +
+                ", poster='" + poster + '\'' +
+                ", backdrop='" + backdrop + '\'' +
+                ", synopsis='" + synopsis + '\'' +
+                '}';
+    }
 }

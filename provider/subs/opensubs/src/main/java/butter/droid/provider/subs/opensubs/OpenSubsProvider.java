@@ -19,6 +19,8 @@ package butter.droid.provider.subs.opensubs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.inject.Singleton;
 
 import butter.droid.provider.base.model.Media;
 import butter.droid.provider.subs.AbsSubsProvider;
@@ -45,6 +49,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observables.GroupedObservable;
 import okhttp3.ResponseBody;
 
+@Singleton
 public class OpenSubsProvider extends AbsSubsProvider {
 
     private static final String USER_AGENT = "Butter v1"; // TODO should be configurable
@@ -85,14 +90,16 @@ public class OpenSubsProvider extends AbsSubsProvider {
     }
 
     private Single<List<Subtitle>> fetchSubtitles(@NonNull final Media media, String languageCode) {
+        Log.d("matias",  "fetchSubtitles: " + languageCode);
         // TODO cache token
         return service.login(new String[]{"", "", Locale.getDefault().getLanguage(), USER_AGENT}) // TODO add constants
                 .flatMap((Function<LoginResponse, SingleSource<SearchResponse>>) loginResponse -> {
                     List<Object> params = new ArrayList<>();
                     params.add(loginResponse.getTokem());
                     // TODO add imdb id search
-                    params.add(Collections.singletonList(new QuerySearchRequest(media.getTitle(), languageCode)));
-
+                    String query = media.getTitle() + " " + media.getYear() + " " + media.getId();
+                    Log.d("matias",  query);
+                    params.add(Collections.singletonList(new QuerySearchRequest(query, languageCode)));
                     return service.search(params);
                 })
                 .map(SearchResponse::getData)
@@ -170,5 +177,12 @@ public class OpenSubsProvider extends AbsSubsProvider {
         LANGUAGE_CODE_MAP.put("tr", "tur");
         LANGUAGE_CODE_MAP.put("uk", "ukr");
         LANGUAGE_CODE_MAP.put("zh", "chi");
+    }
+
+    @Override
+    public String toString() {
+        return "OpenSubsProvider{" +
+                "service=" + service +
+                '}';
     }
 }

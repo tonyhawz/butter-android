@@ -19,6 +19,8 @@ package butter.droid.provider.vodo;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
 import butter.droid.provider.AbsMediaProvider;
 import butter.droid.provider.base.filter.Filter;
 import butter.droid.provider.base.filter.Genre;
@@ -34,12 +36,16 @@ import butter.droid.provider.base.util.Optional;
 import butter.droid.provider.filter.Pager;
 import butter.droid.provider.vodo.api.VodoService;
 import butter.droid.provider.vodo.api.model.VodoMovie;
+import butter.droid.provider.vodo.api.model.VodoQualityTorrent;
 import butter.droid.provider.vodo.api.model.VodoResponse;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class VodoProvider extends AbsMediaProvider {
 
@@ -69,7 +75,9 @@ public class VodoProvider extends AbsMediaProvider {
         this.vodoService = vodoService;
     }
 
-    @NonNull @Override public Single<ItemsWrapper> items(@Nullable final Filter filter, @Nullable Pager pager) {
+    @NonNull
+    @Override
+    public Single<ItemsWrapper> items(@Nullable final Filter filter, @Nullable Pager pager) {
 
         String query = null;
         String genre = null;
@@ -94,42 +102,78 @@ public class VodoProvider extends AbsMediaProvider {
             page = 0;
         }
 
-        return vodoService.fetchMovies(query, genre, sorter, null, null, ITEMS_PER_PAGE, page)
-                .map(VodoResponse::getDownloads)
-                .flatMapObservable(Observable::fromArray)
+//        vodoService.fetchMovies(query, genre, sorter, null, null, ITEMS_PER_PAGE, 1)
+//                .flattenAsObservable(m -> m)
+//                .map(this::mapVodoMovie)
+//                .subscribe(m -> Log.d("matias", m.getTitle()));
+
+        return vodoService.fetchMovies(query, genre, sorter, null, null, ITEMS_PER_PAGE, page + 1)
+                .flattenAsObservable(m -> m)
                 .map(this::mapVodoMovie)
                 .cast(Media.class)
                 .toList()
                 .map(m -> new ItemsWrapper(m, new Paging(String.valueOf(page + 1), m.size() == ITEMS_PER_PAGE)));
     }
 
-    @NonNull @Override public Single<Media> detail(final Media media) {
+    @NonNull
+    @Override
+    public Single<Media> detail(final Media media) {
         return Single.just(media);
     }
 
-    @NonNull @Override public Maybe<List<Sorter>> sorters() {
+    @NonNull
+    @Override
+    public Maybe<List<Sorter>> sorters() {
         return Maybe.just(SORTERS);
     }
 
-    @NonNull @Override public Maybe<List<Genre>> genres() {
+    @NonNull
+    @Override
+    public Maybe<List<Genre>> genres() {
         return Maybe.just(GENRES);
     }
 
-    @NonNull @Override public Maybe<List<NavItem>> navigation() {
+    @NonNull
+    @Override
+    public Maybe<List<NavItem>> navigation() {
         return Maybe.just(NAV_ITEMS);
     }
 
-    @NonNull @Override public Single<Optional<Sorter>> getDefaultSorter() {
+    @NonNull
+    @Override
+    public Single<Optional<Sorter>> getDefaultSorter() {
         return Single.just(Optional.of(SORTER_SEEDS));
     }
 
     private Movie mapVodoMovie(@NonNull VodoMovie vodoMovie) {
 
-        Torrent torrent = new Torrent(vodoMovie.getTorrentUrl(), parseFormat(vodoMovie.getQuality()), 0, vodoMovie.getSizeBytes(), -1, -1);
-
-        return new Movie(vodoMovie.getImdbCode(), vodoMovie.getMovieTitleClean(), vodoMovie.getMovieYear(), new Genre[0],
-                vodoMovie.getRating() / 10f, vodoMovie.getCoverImage(), vodoMovie.getCoverImage(), vodoMovie.getSynopsis(),
-                new Torrent[]{torrent}, null);
+//        Log.d("matias", "map " + vodoMovie.getTitle());
+//
+//        Log.d("matias", vodoMovie.toString());
+        ArrayList<Torrent> torrents = new ArrayList<>();
+        for (Map<String, VodoQualityTorrent> v : vodoMovie.getTorrents().values()) {
+            for (String k : v.keySet()) {
+                VodoQualityTorrent t = v.get(k);
+                torrents.add(new Torrent(
+                        t.getUrl(),
+                        parseFormat(k),
+                        0,
+                        Long.parseLong(t.getSize()),
+                        Integer.parseInt(t.getPeer()),
+                        Integer.parseInt(t.getSeed())));
+            }
+        }
+        return new Movie(
+                vodoMovie.getImbdCode(),
+                vodoMovie.getTitle(),
+                Integer.parseInt(vodoMovie.getYear()),
+                new Genre[0],
+                100 / 10f,
+                vodoMovie.getImages().getPoster(),
+                vodoMovie.getImages().getFanart(),
+                vodoMovie.getSynopsis(),
+                torrents.toArray(new Torrent[torrents.size()]),
+                vodoMovie.getTrailer());
     }
 
     private Format parseFormat(@Nullable String vodoQuality) {

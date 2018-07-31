@@ -17,9 +17,13 @@
 
 package butter.droid.provider.vodo;
 
+import android.util.Log;
+
 import butter.droid.provider.base.ProviderScope;
 import butter.droid.provider.vodo.api.VodoService;
+
 import com.google.gson.Gson;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
@@ -33,25 +37,38 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class VodoModule {
 
-    @Provides @ProviderScope HttpUrl providerUrl() {
-        return HttpUrl.parse("http://butter.vodo.net/");
+    @Provides
+    @ProviderScope
+    HttpUrl providerUrl() {
+        return HttpUrl.parse("https://movies-v2.api-fetch.website/movies/");
     }
 
-    @Provides @ProviderScope CallAdapter.Factory provideCallAdapter() {
+    @Provides
+    @ProviderScope
+    CallAdapter.Factory provideCallAdapter() {
         return RxJava2CallAdapterFactory.create();
     }
 
-    // TODO: 6/22/17 This should be specific for vodo
-//    @Provides @ProviderScope Gson provideGson() {
+//     TODO: 6/22/17 This should be specific for vodo
+//    @Provides
+//    @ProviderScope
+//    Gson provideGson() {
 //        return new Gson();
 //    }
 
-    @Provides @ProviderScope Converter.Factory provideConverter(Gson gson) {
+    @Provides
+    @ProviderScope
+    Converter.Factory provideConverter(Gson gson) {
         return GsonConverterFactory.create(gson);
     }
 
-    @Provides @ProviderScope Retrofit provideRetrofit(OkHttpClient client, HttpUrl url, CallAdapter.Factory callAdapter,
-            Converter.Factory converter) {
+    @Provides
+    @ProviderScope
+    Retrofit provideRetrofit(OkHttpClient client, HttpUrl url, CallAdapter.Factory callAdapter,
+                             Converter.Factory converter) {
+
+        Log.d("matias", url.toString());
+
         return new Retrofit.Builder()
                 .client(client)
                 .baseUrl(url)
@@ -60,11 +77,15 @@ public class VodoModule {
                 .build();
     }
 
-    @Provides @ProviderScope VodoService provideVodoService(Retrofit retrofit) {
+    @Provides
+    @ProviderScope
+    VodoService provideVodoService(Retrofit retrofit) {
         return retrofit.create(VodoService.class);
     }
 
-    @Provides @ProviderScope VodoProvider provideVodo(VodoService service) {
+    @Provides
+    @ProviderScope
+    VodoProvider provideVodo(VodoService service) {
         return new VodoProvider(service);
     }
 

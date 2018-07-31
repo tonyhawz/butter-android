@@ -37,9 +37,11 @@ public class TVPlayerFragment extends TVAbsPlayerFragment implements TVPlayerVie
 
     private static final String ARG_STREAM_INFO = "butter.droid.tv.ui.player.video.TVPlayerFragment.streamInfo";
 
-    @Inject TVPlayerPresenter presenter;
+    @Inject
+    TVPlayerPresenter presenter;
 
-    @Override public void onAttach(final Context context) {
+    @Override
+    public void onAttach(final Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
@@ -57,32 +59,43 @@ public class TVPlayerFragment extends TVAbsPlayerFragment implements TVPlayerVie
         presenter.onCreate(streamInfo, resumePosition);
     }
 
-    @Override public void displayStreamProgress(final int progress) {
+    @Override
+    public void displayStreamProgress(final int progress) {
         stateBuilder.setBufferedPosition(progress);
         mediaSession.setPlaybackState(stateBuilder.build());
     }
 
-    @Override public void showErrorMessage(@StringRes final int message) {
+    @Override
+    public void showErrorMessage(@StringRes final int message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override public void showSubsSelectorDialog() {
+    @Override
+    public void showSubsSelectorDialog() {
+        Toast.makeText(getContext(), "not implemented", Toast.LENGTH_LONG).show();
         // TODO: 5/7/17 - will be implemented later
     }
 
-    @Override public void showPickSubsDialog(final String[] readableNames, final String[] adapterSubtitles, final String currentSubsLang) {
+    @Override
+    public void showPickSubsDialog(final String[] readableNames, final String[] adapterSubtitles, final String currentSubsLang) {
+        Toast.makeText(getContext(), "not implemented", Toast.LENGTH_LONG).show();
         // TODO: 5/7/17 - will be implemented later
     }
 
-    @Override public void showSubsFilePicker() {
+    @Override
+    public void showSubsFilePicker() {
+        Toast.makeText(getContext(), "not implemented", Toast.LENGTH_LONG).show();
         // TODO: 5/7/17 - will be implemented later
     }
 
-    @Override public void displaySubsTimingDialog(final int subtitleOffset) {
+    @Override
+    public void displaySubsTimingDialog(final int subtitleOffset) {
+        Toast.makeText(getContext(), "not implemented", Toast.LENGTH_LONG).show();
         // TODO: 5/7/17 - will be implemented later
     }
 
-    @Override protected boolean onCustomAction(final String action, final Bundle extras) {
+    @Override
+    protected boolean onCustomAction(final String action, final Bundle extras) {
         switch (action) {
 //            case PlayerMediaControllerGlue.ACTION_CLOSE_CAPTION:
 //                presenter.onSubsClicked();
@@ -93,27 +106,33 @@ public class TVPlayerFragment extends TVAbsPlayerFragment implements TVPlayerVie
         }
     }
 
-    @Override public void onStreamPrepared(final Torrent torrent) {
+    @Override
+    public void onStreamPrepared(final Torrent torrent) {
         // nothing to do
     }
 
-    @Override public void onStreamStarted(final Torrent torrent) {
+    @Override
+    public void onStreamStarted(final Torrent torrent) {
         // nothing to do
     }
 
-    @Override public void onStreamError(final Torrent torrent, final Exception ex) {
+    @Override
+    public void onStreamError(final Torrent torrent, final Exception ex) {
         // nothing to do
     }
 
-    @Override public void onStreamReady(final Torrent torrent) {
+    @Override
+    public void onStreamReady(final Torrent torrent) {
         // nothing to do
     }
 
-    @Override public void onStreamProgress(final Torrent torrent, final StreamStatus streamStatus) {
+    @Override
+    public void onStreamProgress(final Torrent torrent, final StreamStatus streamStatus) {
         presenter.streamProgressUpdated(streamStatus.progress);
     }
 
-    @Override public void onStreamStopped() {
+    @Override
+    public void onStreamStopped() {
         // nothing to do
     }
 

@@ -18,20 +18,27 @@
 package butter.droid.provider.mock;
 
 import android.content.Context;
+
 import butter.droid.provider.base.ProviderScope;
 import butter.droid.provider.subs.mock.MockSubsProvider;
+
 import com.google.gson.Gson;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class MockProviderModule {
 
-    @Provides @ProviderScope MockMediaProvider provideMockMoviesProvider(Context context, Gson gson) {
+    @Provides
+    @ProviderScope
+    MockMediaProvider provideMockMoviesProvider(Context context, Gson gson) {
         return new MockMediaProvider(context, gson);
     }
 
-    @Provides @ProviderScope MockSubsProvider provideMockSubsProvider(final Context context) {
+    @Provides
+    @ProviderScope
+    MockSubsProvider provideMockSubsProvider(final Context context) {
         return new MockSubsProvider(context);
     }
 

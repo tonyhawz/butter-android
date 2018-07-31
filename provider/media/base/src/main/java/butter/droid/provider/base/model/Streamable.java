@@ -77,4 +77,9 @@ public abstract class Streamable extends Media {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "Streamable{" +
+                "} " + super.toString();
+    }
 }

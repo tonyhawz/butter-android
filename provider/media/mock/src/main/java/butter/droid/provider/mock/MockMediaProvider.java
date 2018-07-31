@@ -21,6 +21,7 @@ package butter.droid.provider.mock;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import butter.droid.provider.AbsMediaProvider;
 import butter.droid.provider.base.filter.Filter;
 import butter.droid.provider.base.filter.Genre;
@@ -42,14 +43,18 @@ import butter.droid.provider.mock.model.MockMovies;
 import butter.droid.provider.mock.model.MockSeason;
 import butter.droid.provider.mock.model.MockSeasons;
 import butter.droid.provider.mock.model.MockShows;
+
 import com.google.gson.Gson;
+
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import okio.BufferedSource;
 import okio.Okio;
 
@@ -63,7 +68,9 @@ public class MockMediaProvider extends AbsMediaProvider {
         this.gson = gson;
     }
 
-    @NonNull @Override public Single<ItemsWrapper> items(@Nullable final Filter filter, @Nullable Pager pager) {
+    @NonNull
+    @Override
+    public Single<ItemsWrapper> items(@Nullable final Filter filter, @Nullable Pager pager) {
         return parseMovies()
                 .concatWith(parseShows())
                 .concatWith(parseSeasons())
@@ -73,23 +80,33 @@ public class MockMediaProvider extends AbsMediaProvider {
                 .map(l -> new ItemsWrapper(l, new Paging("", false)));
     }
 
-    @NonNull @Override public Single<Media> detail(Media media) {
+    @NonNull
+    @Override
+    public Single<Media> detail(Media media) {
         return Single.just(media);
     }
 
-    @NonNull @Override public Maybe<List<Sorter>> sorters() {
+    @NonNull
+    @Override
+    public Maybe<List<Sorter>> sorters() {
         return Maybe.just(Collections.singletonList(new Sorter("alphabet", R.string.sorter_alphabet)));
     }
 
-    @NonNull @Override public Maybe<List<Genre>> genres() {
+    @NonNull
+    @Override
+    public Maybe<List<Genre>> genres() {
         return Maybe.just(Arrays.asList(Genre.ACTION, Genre.ADVENTURE, Genre.ANIMATION));
     }
 
-    @NonNull @Override public Maybe<List<NavItem>> navigation() {
+    @NonNull
+    @Override
+    public Maybe<List<NavItem>> navigation() {
         return Maybe.just(Collections.singletonList(new NavItem(R.drawable.ic_nav_movies, R.string.genre_action, null)));
     }
 
-    @NonNull @Override public Single<Optional<Sorter>> getDefaultSorter() {
+    @NonNull
+    @Override
+    public Single<Optional<Sorter>> getDefaultSorter() {
         return Single.just(Optional.<Sorter>empty());
     }
 
@@ -112,7 +129,7 @@ public class MockMediaProvider extends AbsMediaProvider {
                 .flattenAsObservable(mockMovies -> mockMovies)
                 .map(m -> new Movie(String.valueOf(m.getId()), m.getTitle(), m.getYear(), new Genre[0], -1, m.getPoster(),
                         m.getBackdrop(), m.getSynopsis(),
-                        new Torrent[] {
+                        new Torrent[]{
                                 new Torrent(m.getTorrent(), new Format(m.getQuality(), Format.FORMAT_NORMAL), 0)
                         }, m.getTrailer()));
     }
@@ -151,7 +168,7 @@ public class MockMediaProvider extends AbsMediaProvider {
             MockEpisode episode = mockEpisodes[i];
             episodes[i] = new Episode(String.valueOf(episode.getId()), episode.getTitle(), episode.getYear(), new Genre[0],
                     -1, episode.getPoster(), episode.getBackdrop(), episode.getSynopsis(),
-                    new Torrent[] {
+                    new Torrent[]{
                             new Torrent(episode.getTorrent(), new Format(episode.getQuality(), Format.FORMAT_NORMAL), 0)
                     }, episode.getEpisdoe());
         }

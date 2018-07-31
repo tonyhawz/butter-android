@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.support.annotation.RestrictTo.Scope;
+
 import butter.droid.provider.base.filter.Filter;
 import butter.droid.provider.base.filter.Genre;
 import butter.droid.provider.base.filter.Sorter;
@@ -31,27 +32,34 @@ import butter.droid.provider.base.util.Optional;
 import butter.droid.provider.filter.Pager;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+
 import java.util.List;
 
 @RestrictTo(Scope.LIBRARY_GROUP)
 public interface MediaProvider {
 
-    @NonNull Single<ItemsWrapper> items(@Nullable Filter filter, @Nullable Pager pager);
+    @NonNull
+    Single<ItemsWrapper> items(@Nullable Filter filter, @Nullable Pager pager);
 
-    @NonNull Single<Media> detail(Media media);
+    @NonNull
+    Single<Media> detail(Media media);
 
     /**
      * @return List of supported Sorters for this provider.
      */
-    @NonNull Maybe<List<Sorter>> sorters();
+    @NonNull
+    Maybe<List<Sorter>> sorters();
 
     /**
      * @return List of supported Genres for this provider.
      */
-    @NonNull Maybe<List<Genre>> genres();
+    @NonNull
+    Maybe<List<Genre>> genres();
 
-    @NonNull Maybe<List<NavItem>> navigation();
+    @NonNull
+    Maybe<List<NavItem>> navigation();
 
-    @NonNull Single<Optional<Sorter>> getDefaultSorter();
+    @NonNull
+    Single<Optional<Sorter>> getDefaultSorter();
 
 }

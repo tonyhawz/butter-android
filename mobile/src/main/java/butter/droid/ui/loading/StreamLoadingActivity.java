@@ -29,20 +29,24 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
+
 import butter.droid.R;
 import butter.droid.base.providers.media.model.StreamInfo;
 import butter.droid.base.torrent.TorrentService;
 import butter.droid.ui.ButterBaseActivity;
 import butter.droid.ui.loading.fragment.StreamLoadingFragment;
+
 import javax.inject.Inject;
 
 public class StreamLoadingActivity extends ButterBaseActivity implements StreamLoadingView {
 
     private static final String EXTRA_INFO = "butter.droid.ui.loading.StreamLoadingActivity.info";
 
-    @Inject StreamLoadingPresenter presenter;
+    @Inject
+    StreamLoadingPresenter presenter;
 
-    @Nullable private StreamLoadingFragment fragment;
+    @Nullable
+    private StreamLoadingFragment fragment;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -86,7 +90,8 @@ public class StreamLoadingActivity extends ButterBaseActivity implements StreamL
         super.onBackPressed();
     }
 
-    @Override public void displayStreamLoadingFragment(@NonNull StreamInfo info) {
+    @Override
+    public void displayStreamLoadingFragment(@NonNull StreamInfo info) {
         StreamLoadingFragment fragment = StreamLoadingFragment.newInstance(info);
         getSupportFragmentManager()
                 .beginTransaction()

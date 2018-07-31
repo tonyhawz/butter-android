@@ -18,6 +18,8 @@
 package butter.droid.base.ui.loading.fragment;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.butterproject.torrentstream.StreamStatus;
 import org.butterproject.torrentstream.Torrent;
@@ -52,12 +54,13 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
     protected StreamInfo streamInfo;
 
     private State state;
-    @Nullable private Disposable subtitleDisposable;
+    @Nullable
+    private Disposable subtitleDisposable;
     protected boolean playingExternal = false;
     protected Boolean playerStarted = false;
 
     public BaseStreamLoadingFragmentPresenterImpl(BaseStreamLoadingFragmentView view, ProviderManager providerManager,
-            final SubtitleManager subtitleManager, PlayerManager playerManager, Context context) {
+                                                  final SubtitleManager subtitleManager, PlayerManager playerManager, Context context) {
         this.view = view;
         this.providerManager = providerManager;
         this.subtitleManager = subtitleManager;
@@ -71,7 +74,8 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
         loadSubtitles();
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         if (playerStarted) {
             BeamServer beamService = BeamServerService.getServer();
             if (beamService != null) {
@@ -89,7 +93,8 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
         }
     }
 
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         final Disposable d = this.subtitleDisposable;
         if (d != null) {
             d.dispose();
@@ -99,20 +104,24 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
     /**
      * Starts the torrent service streaming a torrent url
      */
-    @Override public void startStream() {
+    @Override
+    public void startStream() {
         String torrentUrl = streamInfo.getTorrentUrl();
         view.startStreamUrl(torrentUrl);
     }
 
-    @Override public void onStreamPrepared(Torrent torrent) {
+    @Override
+    public void onStreamPrepared(Torrent torrent) {
         torrent.startDownload();
     }
 
-    @Override public void onStreamStarted(Torrent torrent) {
+    @Override
+    public void onStreamStarted(Torrent torrent) {
         setState(State.BUFFERING);
     }
 
-    @Override public void onStreamError(Torrent torrent, Exception e) {
+    @Override
+    public void onStreamError(Torrent torrent, Exception e) {
         switch (e.getMessage()) {
             case "Write error":
                 setState(State.ERROR, context.getString(R.string.error_files));
@@ -126,16 +135,19 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
         }
     }
 
-    @Override public void onStreamReady(Torrent torrent) {
+    @Override
+    public void onStreamReady(Torrent torrent) {
         streamInfo.setStreamUrl(torrent.getVideoFile().toString());
         startPlayer();
     }
 
-    @Override public void onStreamProgress(Torrent torrent, StreamStatus status) {
+    @Override
+    public void onStreamProgress(Torrent torrent, StreamStatus status) {
         setState(State.STREAMING, status);
     }
 
-    @Override public void onStreamStopped() {
+    @Override
+    public void onStreamStopped() {
         // TODO should probably do something here?
         // nothing to do
     }
@@ -219,27 +231,37 @@ public abstract class BaseStreamLoadingFragmentPresenterImpl implements BaseStre
         MediaWrapper media = streamInfo.getMedia();
         SubsProvider subsProvider = providerManager.getSubsProvider(media.getProviderId());
         final SubtitleWrapper subtitle = streamInfo.getSubtitle();
-
+        Log.d("matias", "loadSubtitles");
         subtitleManager.downloadSubtitle(subsProvider, media.getMedia(), subtitle)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new MaybeObserver<SubtitleWrapper>() {
-                    @Override public void onSubscribe(final Disposable d) {
+                    @Override
+                    public void onSubscribe(final Disposable d) {
                         subtitleDisposable = d;
                     }
 
-                    @Override public void onSuccess(final SubtitleWrapper wrapper) {
+                    @Override
+                    public void onSuccess(final SubtitleWrapper wrapper) {
                         subtitleDisposable = null;
                         streamInfo.setSubtitle(wrapper);
+                        Toast.makeText(context, "subtitle success", Toast.LENGTH_SHORT).show();
+                        Log.d("matias", "subtitle success");
                         startPlayer();
                     }
 
-                    @Override public void onError(final Throwable e) {
+                    @Override
+                    public void onError(final Throwable e) {
                         subtitleDisposable = null;
+                        Toast.makeText(context, "subtitle error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d("matias", "subtitle error", e);
                         startPlayer();
                     }
 
-                    @Override public void onComplete() {
+                    @Override
+                    public void onComplete() {
                         subtitleDisposable = null;
+                        Toast.makeText(context, "subtitle complete?", Toast.LENGTH_SHORT).show();
+                        Log.d("matias", "subtitle complete?");
                         startPlayer();
                     }
                 });
