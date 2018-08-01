@@ -57,6 +57,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+
 
     implementation('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'
@@ -64,6 +66,8 @@ dependencies {
         exclude module: 'xpp3'
     }
     implementation 'net.iharder:base64:2.3.9'
+    implementation files("libs/retrofit-xmlrpc-0.1.jar")
+
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"

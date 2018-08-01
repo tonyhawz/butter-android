@@ -24,6 +24,7 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
@@ -33,12 +34,14 @@ public interface OpenSubsService {
     @Headers({"Accept: application/json", "User-Agent: Butter v1"})
     @GET("search/imdbid-{imdbid}/sublanguageid-{lang}")
     Single<List<OpenSubsItem>> searchByImdbId(
+            @Header("User-Agent") String userAgent,
             @Path(value = "imdbid", encoded = true) String imdbId,
             @Path("lang") String language);
 
     @Headers({"Accept: application/json", "User-Agent: Butter v1"})
     @GET("search/episode-{episode}/imdbid-{imdbid}/season-{season}/sublanguageid-{lang}")
     Single<List<OpenSubsItem>> searchByImdbSeasonEpisode(
+            @Header("User-Agent") String userAgent,
             @Path(value = "imdbid", encoded = true) String imdbId,
             @Path("season") String season,
             @Path("episode") String episode,

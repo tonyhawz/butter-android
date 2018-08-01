@@ -85,7 +85,11 @@ public class OpenSubsProvider extends AbsSubsProvider {
     }
 
     private Single<List<Subtitle>> fetchSubtitles(@NonNull final Media media, String languageCode) {
-        return service.searchByImdbId(media.getId(), languageCode)
+
+        String imdbid = media.getId().replaceAll("^tt", "");
+        Log.d("matias", "busco por imdbid: " + imdbid);
+        return service.searchByImdbId(USER_AGENT, imdbid, languageCode)
+                .retry(5)
                 .flattenAsObservable(m -> m)
                 .groupBy(OpenSubsItem::getSubLanguageID)
                 .concatMap(

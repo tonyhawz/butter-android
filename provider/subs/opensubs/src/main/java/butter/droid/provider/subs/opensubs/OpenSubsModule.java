@@ -27,13 +27,19 @@ import okhttp3.OkHttpClient;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class OpenSubsModule {
 
     @Provides @ProviderScope @OpenSubsQualifier HttpUrl providerUrl() {
-        return HttpUrl.parse("https://rest.opensubtitles.org/");
+        return HttpUrl.parse("http://rest.opensubtitles.org/");
     }
+
+    @Provides @ProviderScope @OpenSubsQualifier Converter.Factory provideGsonConverterFactory() {
+        return GsonConverterFactory.create();
+    }
+
 
     @Provides @ProviderScope @OpenSubsQualifier Retrofit provideRetrofit(OkHttpClient client, @OpenSubsQualifier HttpUrl url,
             CallAdapter.Factory callAdapter, @OpenSubsQualifier Converter.Factory converter) {
