@@ -21,26 +21,18 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import butter.droid.provider.base.model.Media;
 import butter.droid.provider.subs.AbsSubsProvider;
 import butter.droid.provider.subs.model.Subtitle;
 import butter.droid.provider.subs.opensubs.data.OpenSubsService;
-import butter.droid.provider.subs.opensubs.data.model.request.QuerySearchRequest;
-import butter.droid.provider.subs.opensubs.data.model.response.LoginResponse;
-import butter.droid.provider.subs.opensubs.data.model.response.OpenSubItem;
-import butter.droid.provider.subs.opensubs.data.model.response.SearchResponse;
+import butter.droid.provider.subs.opensubs.data.model.response.OpenSubsItem;
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import io.reactivex.observables.GroupedObservable;
 import okhttp3.ResponseBody;
@@ -59,18 +51,21 @@ public class OpenSubsProvider extends AbsSubsProvider {
         this.service = service;
     }
 
-    @Override protected Maybe<InputStream> provideSubs(@NonNull final Media media, @NonNull final Subtitle subtitle) {
+    @Override
+    protected Maybe<InputStream> provideSubs(@NonNull final Media media, @NonNull final Subtitle subtitle) {
         //noinspection ConstantConditions
         return service.download(subtitle.getMeta().get(META_DOWNLOAD_LINK))
                 .map(ResponseBody::byteStream)
                 .toMaybe();
     }
 
-    @Override public Single<List<Subtitle>> list(@NonNull final Media media) {
+    @Override
+    public Single<List<Subtitle>> list(@NonNull final Media media) {
         return fetchSubtitles(media);
     }
 
-    @Override public Maybe<Subtitle> getSubtitle(@NonNull Media media, @NonNull String languageCode) {
+    @Override
+    public Maybe<Subtitle> getSubtitle(@NonNull Media media, @NonNull String languageCode) {
         if (LANGUAGE_CODE_MAP.containsKey(languageCode)) {
             return fetchSubtitles(media, LANGUAGE_CODE_MAP.get(languageCode))
                     .flattenAsObservable(it -> it)
@@ -81,25 +76,15 @@ public class OpenSubsProvider extends AbsSubsProvider {
     }
 
     private Single<List<Subtitle>> fetchSubtitles(@NonNull final Media media) {
-        return fetchSubtitles(media, QuerySearchRequest.LANGUAGE_ALL);
+        return fetchSubtitles(media, "all");
     }
 
     private Single<List<Subtitle>> fetchSubtitles(@NonNull final Media media, String languageCode) {
-        // TODO cache token
-        return service.login(new String[]{"", "", Locale.getDefault().getLanguage(), USER_AGENT}) // TODO add constants
-                .flatMap((Function<LoginResponse, SingleSource<SearchResponse>>) loginResponse -> {
-                    List<Object> params = new ArrayList<>();
-                    params.add(loginResponse.getTokem());
-                    // TODO add imdb id search
-                    params.add(Collections.singletonList(new QuerySearchRequest(media.getTitle(), languageCode)));
-
-                    return service.search(params);
-                })
-                .map(SearchResponse::getData)
-                .flatMapObservable(Observable::fromIterable)
-                .groupBy(OpenSubItem::getLanguageCode)
+        return service.searchByImdbId(media.getId(), languageCode)
+                .flattenAsObservable(m -> m)
+                .groupBy(OpenSubsItem::getSubLanguageID)
                 .concatMap(
-                        (Function<GroupedObservable<String, OpenSubItem>, ObservableSource<OpenSubItem>>) observable ->
+                        (Function<GroupedObservable<String, OpenSubsItem>, ObservableSource<OpenSubsItem>>) observable ->
                                 observable.reduce((openSubItem, openSubItem2) -> {
                                     int diff = getItemScore(openSubItem2) - getItemScore(openSubItem);
                                     // TODO downloads count
@@ -113,14 +98,15 @@ public class OpenSubsProvider extends AbsSubsProvider {
                 .map(openSubItem -> {
                     Map<String, String> meta = new HashMap<>(1);
                     meta.put(META_DOWNLOAD_LINK,
-                            openSubItem.getDownalodLink().replace(".gz", ".srt")); // TODO download gz files
-                    return new Subtitle(openSubItem.getLanguageCode(), openSubItem.getLanguageName(), meta);
+                            openSubItem.getSubDownloadLink().replace(".gz", ".srt")); // TODO download gz files
+                    return new Subtitle(openSubItem.getSubLanguageID(), openSubItem.getLanguageName(), meta);
                 })
                 .toSortedList(
-                        (o1, o2) -> o1.getName().compareTo(o2.getName())); // TODO shouldn't be dependent on provider
+                        (o1, o2) -> o1.getName().compareTo(o2.getName()));
+
     }
 
-    private int getItemScore(OpenSubItem item) {
+    private int getItemScore(OpenSubsItem item) {
         int score = 0;
 
         if (item != null) {
@@ -136,6 +122,7 @@ public class OpenSubsProvider extends AbsSubsProvider {
     }
 
     private static final Map<String, String> LANGUAGE_CODE_MAP = new HashMap<>();
+
     static {
         LANGUAGE_CODE_MAP.put("ar", "ara");
         LANGUAGE_CODE_MAP.put("bg", "bul");

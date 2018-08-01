@@ -20,6 +20,7 @@ package butter.droid.provider.subs.opensubs;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
 import javax.inject.Qualifier;
 
 @Qualifier

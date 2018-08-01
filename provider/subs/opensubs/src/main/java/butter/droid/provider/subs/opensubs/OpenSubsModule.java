@@ -22,7 +22,6 @@ import butter.droid.provider.base.ProviderScope;
 import butter.droid.provider.subs.opensubs.data.OpenSubsService;
 import dagger.Module;
 import dagger.Provides;
-import nl.nl2312.xmlrpc.XmlRpcConverterFactory;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import retrofit2.CallAdapter;
@@ -33,13 +32,8 @@ import retrofit2.Retrofit;
 public class OpenSubsModule {
 
     @Provides @ProviderScope @OpenSubsQualifier HttpUrl providerUrl() {
-        return HttpUrl.parse("https://api.opensubtitles.org/");
+        return HttpUrl.parse("https://rest.opensubtitles.org/");
     }
-
-    @Provides @ProviderScope @OpenSubsQualifier Converter.Factory provideXmlRpcConverterFactory() {
-        return XmlRpcConverterFactory.create();
-    }
-
 
     @Provides @ProviderScope @OpenSubsQualifier Retrofit provideRetrofit(OkHttpClient client, @OpenSubsQualifier HttpUrl url,
             CallAdapter.Factory callAdapter, @OpenSubsQualifier Converter.Factory converter) {

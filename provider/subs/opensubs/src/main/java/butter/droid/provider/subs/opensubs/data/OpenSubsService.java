@@ -17,23 +17,34 @@
 
 package butter.droid.provider.subs.opensubs.data;
 
-import butter.droid.provider.subs.opensubs.data.model.response.LoginResponse;
-import butter.droid.provider.subs.opensubs.data.model.response.SearchResponse;
+import butter.droid.provider.subs.opensubs.data.model.response.OpenSubsItem;
 import io.reactivex.Single;
+
 import java.util.List;
-import nl.nl2312.xmlrpc.XmlRpc;
+
 import okhttp3.ResponseBody;
-import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.POST;
+import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Url;
 
 public interface OpenSubsService {
 
-    @XmlRpc("LogIn") @POST("xml-rpc") Single<LoginResponse> login(@Body String[] request);
+    @Headers({"Accept: application/json", "User-Agent: Butter v1"})
+    @GET("search/imdbid-{imdbid}/sublanguageid-{lang}")
+    Single<List<OpenSubsItem>> searchByImdbId(
+            @Path(value = "imdbid", encoded = true) String imdbId,
+            @Path("lang") String language);
 
-    @XmlRpc("SearchSubtitles") @POST("xml-rpc") Single<SearchResponse> search(@Body List<Object> request);
+    @Headers({"Accept: application/json", "User-Agent: Butter v1"})
+    @GET("search/episode-{episode}/imdbid-{imdbid}/season-{season}/sublanguageid-{lang}")
+    Single<List<OpenSubsItem>> searchByImdbSeasonEpisode(
+            @Path(value = "imdbid", encoded = true) String imdbId,
+            @Path("season") String season,
+            @Path("episode") String episode,
+            @Path("lang") String language);
 
-    @GET Single<ResponseBody> download(@Url String downloadLink);
+    @GET
+    Single<ResponseBody> download(@Url String downloadLink);
 
 }
