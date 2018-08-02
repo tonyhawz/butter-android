@@ -17,47 +17,44 @@
 
 package butter.droid.tv.ui;
 
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
+
+import org.butterproject.torrentstream.StreamStatus;
+import org.butterproject.torrentstream.Torrent;
+import org.butterproject.torrentstream.listeners.TorrentListener;
+
+import javax.inject.Inject;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import butter.droid.base.ButterApplication;
 import butter.droid.base.content.preferences.PreferencesHandler;
 import butter.droid.base.torrent.TorrentService;
 import butter.droid.base.ui.TorrentActivity;
 import butter.droid.base.utils.LocaleUtils;
-import butterknife.ButterKnife;
-import org.butterproject.torrentstream.StreamStatus;
-import org.butterproject.torrentstream.Torrent;
-import org.butterproject.torrentstream.listeners.TorrentListener;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasFragmentInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import javax.inject.Inject;
 
 public abstract class TVTorrentBaseActivity extends FragmentActivity implements TorrentListener, TorrentActivity, ServiceConnection,
-        HasFragmentInjector, HasSupportFragmentInjector {
+        HasSupportFragmentInjector {
 
-    @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
-    @Inject DispatchingAndroidInjector<android.support.v4.app.Fragment> supportFragmentInjector;
+    @Inject DispatchingAndroidInjector<androidx.fragment.app.Fragment> supportFragmentInjector;
     @Inject PreferencesHandler preferencesHandler;
 
     protected TorrentService torrentStream;
 
-    protected void onCreate(Bundle savedInstanceState, int layoutId) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
+
         String language = preferencesHandler.getLocale();
         LocaleUtils.setCurrent(this, LocaleUtils.toLocale(language));
-        super.onCreate(savedInstanceState);
 
-        if (layoutId != 0) {
-            setContentView(layoutId);
-            ButterKnife.bind(this);
-        }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -142,12 +139,7 @@ public abstract class TVTorrentBaseActivity extends FragmentActivity implements 
 
     }
 
-    @Override
-    public AndroidInjector<Fragment> fragmentInjector() {
-        return fragmentInjector;
-    }
-
-    @Override public AndroidInjector<android.support.v4.app.Fragment> supportFragmentInjector() {
+    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
         return supportFragmentInjector;
     }
 }

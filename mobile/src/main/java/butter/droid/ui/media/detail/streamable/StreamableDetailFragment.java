@@ -19,11 +19,11 @@ package butter.droid.ui.media.detail.streamable;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.FloatingActionButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -164,7 +164,7 @@ public class StreamableDetailFragment extends DaggerFragment implements Streamab
 
     @Override public void displaySynopsis(String synopsis) {
         this.synopsis.setText(synopsis);
-        this.synopsis.post(() -> {
+        this.synopsis.post(() -> { // TODO null layout
             boolean ellipsized = false;
             Layout layout = StreamableDetailFragment.this.synopsis.getLayout();
             int lines = layout.getLineCount();

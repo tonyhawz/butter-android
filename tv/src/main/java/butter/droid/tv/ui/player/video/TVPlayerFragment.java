@@ -19,8 +19,6 @@ package butter.droid.tv.ui.player.video;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 import org.butterproject.torrentstream.StreamStatus;
@@ -29,7 +27,13 @@ import org.butterproject.torrentstream.listeners.TorrentListener;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import butter.droid.base.providers.media.model.MediaWrapper;
 import butter.droid.base.providers.media.model.StreamInfo;
+import butter.droid.base.ui.player.stream.StreamPlayerPresenterImpl;
+import butter.droid.provider.subs.model.Subtitle;
 import butter.droid.tv.ui.player.abs.TVAbsPlayerFragment;
 import dagger.android.support.AndroidSupportInjection;
 
@@ -94,15 +98,14 @@ public class TVPlayerFragment extends TVAbsPlayerFragment implements TVPlayerVie
         // TODO: 5/7/17 - will be implemented later
     }
 
-    @Override
-    protected boolean onCustomAction(final String action, final Bundle extras) {
+    @Override protected boolean onCustomAction(final int action) {
         switch (action) {
-//            case PlayerMediaControllerGlue.ACTION_CLOSE_CAPTION:
-//                presenter.onSubsClicked();
-//                tickle();
-//                return true;
+            case StreamPlayerPresenterImpl.PLAYER_ACTION_CC:
+                presenter.onSubsClicked();
+                tickle();
+                return true;
             default:
-                return super.onCustomAction(action, extras);
+                return super.onCustomAction(action);
         }
     }
 

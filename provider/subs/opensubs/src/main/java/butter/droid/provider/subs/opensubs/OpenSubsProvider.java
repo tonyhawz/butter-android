@@ -18,9 +18,7 @@
 package butter.droid.provider.subs.opensubs;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
+import androidx.annotation.NonNull;
 
 import java.io.InputStream;
 import java.util.HashMap;

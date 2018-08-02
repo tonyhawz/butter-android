@@ -17,13 +17,12 @@
 
 package butter.droid.provider.vodo;
 
+import com.google.gson.Gson;
+
 import android.util.Log;
 
 import butter.droid.provider.base.ProviderScope;
 import butter.droid.provider.vodo.api.VodoService;
-
-import com.google.gson.Gson;
-
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
